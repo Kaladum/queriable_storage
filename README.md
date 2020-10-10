@@ -1,5 +1,8 @@
 # queriable_storage
-Queriable storage implementation in Rust
+[![Crates.io](https://img.shields.io/crates/v/queriable_storage.svg)](https://crates.io/crates/queriable_storage)
+[![Docs](https://docs.rs/queriable_storage/badge.svg?version=0.2.1)](https://docs.rs/queriable_storage)
+
+__Queriable storage implementation in Rust__
 
 This crate provides the QueriableDataStore struct that can be queried by multiple filters.
 
