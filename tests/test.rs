@@ -1,73 +1,75 @@
 use queriable_storage::QueriableDataStore;
 
-struct TestData {
+struct Person {
     first_name: &'static str,
     last_name: &'static str,
     age: u32,
 }
 
-fn get_test_data() -> QueriableDataStore<TestData> {
-    let data = vec![
-        TestData {
+fn get_test_persons() -> Vec<Person> {
+    vec![
+        Person {
             first_name: "Isaiah",
             last_name: "Mccarthy",
             age: 32,
         },
-        TestData {
+        Person {
             first_name: "Bella",
             last_name: "Crawford",
             age: 58,
         },
-        TestData {
+        Person {
             first_name: "Dexter",
             last_name: "O'Brien",
             age: 75,
         },
-        TestData {
+        Person {
             first_name: "Catherine",
             last_name: "Hunt",
             age: 16,
         },
-        TestData {
+        Person {
             first_name: "Haris",
             last_name: "Burke",
             age: 28,
         },
-        TestData {
+        Person {
             first_name: "Meghan",
             last_name: "Berry",
             age: 42,
         },
-        TestData {
+        Person {
             first_name: "Brett",
             last_name: "Holmes",
             age: 37,
         },
-        TestData {
+        Person {
             first_name: "Daniella",
             last_name: "Edwards",
             age: 28,
         },
-        TestData {
+        Person {
             first_name: "Aaron",
             last_name: "Mcbride",
             age: 8,
         },
-        TestData {
+        Person {
             first_name: "Sharon",
             last_name: "Snyder",
             age: 63,
         },
-    ];
+    ]
+}
 
-    data.into()
+fn get_test_data() -> QueriableDataStore<Person> {
+    get_test_persons().into()
 }
 
 #[test]
 fn test_eq() {
     let data = get_test_data();
     let first_name_index = data.get_index(|v| v.first_name);
-    let filtered: Vec<&TestData> = data.filter(first_name_index.filter_eq("Isaiah")).collect();
+    let filtered: Vec<&Person> = data.filter(first_name_index.filter_eq("Isaiah")).collect();
     assert_eq!(filtered.len(), 1);
     assert_eq!(filtered[0].first_name, "Isaiah");
     assert_eq!(filtered[0].last_name, "Mccarthy");
@@ -77,7 +79,7 @@ fn test_eq() {
 fn test_eq_not_found() {
     let data = get_test_data();
     let first_name_index = data.get_index(|v| v.first_name);
-    let filtered: Vec<&TestData> = data.filter(first_name_index.filter_eq("Test")).collect();
+    let filtered: Vec<&Person> = data.filter(first_name_index.filter_eq("Test")).collect();
     assert_eq!(filtered.len(), 0);
 }
 
@@ -86,7 +88,7 @@ fn test_and() {
     let data = get_test_data();
     let first_name_index = data.get_index(|v| v.first_name);
     let last_name_index = data.get_index(|v| v.last_name);
-    let filtered: Vec<&TestData> = data
+    let filtered: Vec<&Person> = data
         .filter(first_name_index.filter_eq("Isaiah") & last_name_index.filter_eq("Mccarthy"))
         .collect();
     assert_eq!(filtered.len(), 1);
@@ -99,7 +101,7 @@ fn test_or() {
     let data = get_test_data();
     let first_name_index = data.get_index(|v| v.first_name);
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data
+    let filtered: Vec<&Person> = data
         .filter(
             first_name_index.filter_eq("Test")
                 | age_index.filter_lt(20)
@@ -115,7 +117,7 @@ fn test_or() {
 fn test_gt() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter(age_index.filter_gt(63)).collect();
+    let filtered: Vec<&Person> = data.filter(age_index.filter_gt(63)).collect();
     assert_eq!(filtered.len(), 1);
     assert_eq!(filtered[0].age, 75);
 }
@@ -124,7 +126,7 @@ fn test_gt() {
 fn test_gte() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter(age_index.filter_gte(63)).collect();
+    let filtered: Vec<&Person> = data.filter(age_index.filter_gte(63)).collect();
     assert_eq!(filtered.len(), 2);
     assert_eq!(filtered[0].age, 75);
     assert_eq!(filtered[1].age, 63);
@@ -134,7 +136,7 @@ fn test_gte() {
 fn test_lt() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter(age_index.filter_lt(30)).collect();
+    let filtered: Vec<&Person> = data.filter(age_index.filter_lt(30)).collect();
     assert_eq!(filtered.len(), 4);
 }
 
@@ -142,7 +144,7 @@ fn test_lt() {
 fn test_lte() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter(age_index.filter_lte(20)).collect();
+    let filtered: Vec<&Person> = data.filter(age_index.filter_lte(20)).collect();
     assert_eq!(filtered.len(), 2);
 }
 
@@ -150,7 +152,7 @@ fn test_lte() {
 fn test_between() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter(age_index.filter_between(30, 50)).collect();
+    let filtered: Vec<&Person> = data.filter(age_index.filter_between(30, 50)).collect();
     assert_eq!(filtered.len(), 3);
 }
 
@@ -160,7 +162,7 @@ fn test_combined() {
     let first_name_index = data.get_index(|v| v.first_name);
     let last_name_index = data.get_index(|v| v.last_name);
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data
+    let filtered: Vec<&Person> = data
         .filter(
             (first_name_index.filter_eq("Isaiah") & last_name_index.filter_eq("Mccarthy"))
                 | (first_name_index.filter_eq("Meghan") & age_index.filter_eq(42)),
