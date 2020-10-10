@@ -67,12 +67,27 @@ fn get_test_data() -> QueriableDataStore<TestData> {
 fn test_eq() {
     let data = get_test_data();
     let first_name_index = data.get_index(|v| v.first_name);
+    let filtered: Vec<&TestData> = data.filter(first_name_index.filter_eq("Isaiah")).collect();
+    assert_eq!(filtered.len(), 1);
+    assert_eq!(filtered[0].first_name, "Isaiah");
+    assert_eq!(filtered[0].last_name, "Mccarthy");
+}
+
+#[test]
+fn test_eq_not_found() {
+    let data = get_test_data();
+    let first_name_index = data.get_index(|v| v.first_name);
+    let filtered: Vec<&TestData> = data.filter(first_name_index.filter_eq("Test")).collect();
+    assert_eq!(filtered.len(), 0);
+}
+
+#[test]
+fn test_and() {
+    let data = get_test_data();
+    let first_name_index = data.get_index(|v| v.first_name);
     let last_name_index = data.get_index(|v| v.last_name);
     let filtered: Vec<&TestData> = data
-        .filter([
-            first_name_index.filter_eq("Isaiah"),
-            last_name_index.filter_eq("Mccarthy"),
-        ])
+        .filter(first_name_index.filter_eq("Isaiah") & last_name_index.filter_eq("Mccarthy"))
         .collect();
     assert_eq!(filtered.len(), 1);
     assert_eq!(filtered[0].first_name, "Isaiah");
@@ -80,10 +95,27 @@ fn test_eq() {
 }
 
 #[test]
+fn test_or() {
+    let data = get_test_data();
+    let first_name_index = data.get_index(|v| v.first_name);
+    let age_index = data.get_index(|v| v.age);
+    let filtered: Vec<&TestData> = data
+        .filter(
+            first_name_index.filter_eq("Test")
+                | age_index.filter_lt(20)
+                | first_name_index.filter_eq("Meghan")
+                | age_index.filter_gt(70)
+                | first_name_index.filter_eq("Meghan"),
+        )
+        .collect();
+    assert_eq!(filtered.len(), 4);
+}
+
+#[test]
 fn test_gt() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter([age_index.filter_gt(63)]).collect();
+    let filtered: Vec<&TestData> = data.filter(age_index.filter_gt(63)).collect();
     assert_eq!(filtered.len(), 1);
     assert_eq!(filtered[0].age, 75);
 }
@@ -92,7 +124,7 @@ fn test_gt() {
 fn test_gte() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter([age_index.filter_gte(63)]).collect();
+    let filtered: Vec<&TestData> = data.filter(age_index.filter_gte(63)).collect();
     assert_eq!(filtered.len(), 2);
     assert_eq!(filtered[0].age, 75);
     assert_eq!(filtered[1].age, 63);
@@ -102,7 +134,7 @@ fn test_gte() {
 fn test_lt() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter([age_index.filter_lt(30)]).collect();
+    let filtered: Vec<&TestData> = data.filter(age_index.filter_lt(30)).collect();
     assert_eq!(filtered.len(), 4);
 }
 
@@ -110,7 +142,7 @@ fn test_lt() {
 fn test_lte() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter([age_index.filter_lte(20)]).collect();
+    let filtered: Vec<&TestData> = data.filter(age_index.filter_lte(20)).collect();
     assert_eq!(filtered.len(), 2);
 }
 
@@ -118,6 +150,21 @@ fn test_lte() {
 fn test_between() {
     let data = get_test_data();
     let age_index = data.get_index(|v| v.age);
-    let filtered: Vec<&TestData> = data.filter([age_index.filter_between(30, 50)]).collect();
+    let filtered: Vec<&TestData> = data.filter(age_index.filter_between(30, 50)).collect();
     assert_eq!(filtered.len(), 3);
+}
+
+#[test]
+fn test_combined() {
+    let data = get_test_data();
+    let first_name_index = data.get_index(|v| v.first_name);
+    let last_name_index = data.get_index(|v| v.last_name);
+    let age_index = data.get_index(|v| v.age);
+    let filtered: Vec<&TestData> = data
+        .filter(
+            (first_name_index.filter_eq("Isaiah") & last_name_index.filter_eq("Mccarthy"))
+                | (first_name_index.filter_eq("Meghan") & age_index.filter_eq(42)),
+        )
+        .collect();
+    assert_eq!(filtered.len(), 2);
 }
