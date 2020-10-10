@@ -1,0 +1,7 @@
+[package]
+name = "queriable-storage"
+version = "0.1.0"
+authors = ["Kaladum"]
+edition = "2018"
+
+[dependencies]
