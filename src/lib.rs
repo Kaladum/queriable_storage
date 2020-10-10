@@ -10,9 +10,9 @@ pub struct QueriableDataStore<T> {
 impl<T> QueriableDataStore<T> {
     pub fn filter<F>(&self, filter_iterator: F) -> impl Iterator<Item = &T>
     where
-        F: IntoIterator<Item = DataFilter>,
+        F: Into<Vec<DataFilter>>,
     {
-        let mut filters: Vec<DataFilter> = filter_iterator.into_iter().collect();
+        let mut filters: Vec<DataFilter> = filter_iterator.into();
         filters.sort_by_key(|v| v.indices.len());
         let mut filter_iterators: Vec<_> = filters
             .iter()
@@ -90,7 +90,7 @@ where
         Self { pairs }
     }
 
-    pub fn filter_in_range<R>(&self, range: R) -> DataFilter
+    pub fn filter_range<R>(&self, range: R) -> DataFilter
     where
         R: RangeBounds<T>,
     {
@@ -102,6 +102,10 @@ where
         DataFilter::from_unsorted(filtered)
     }
 
+    pub fn filter_between(&self, lower_inclusive: T, upper_inclusive: T) -> DataFilter {
+        self.filter_range((Included(lower_inclusive), Included(upper_inclusive)))
+    }
+
     pub fn filter_eq(&self, value: T) -> DataFilter {
         if let Some(keys) = self.pairs.get(&value) {
             DataFilter::from_unsorted(keys.iter().cloned())
@@ -111,19 +115,19 @@ where
     }
 
     pub fn filter_gt(&self, lower_limit: T) -> DataFilter {
-        self.filter_in_range((Excluded(lower_limit), Unbounded))
+        self.filter_range((Excluded(lower_limit), Unbounded))
     }
 
     pub fn filter_gte(&self, lower_limit: T) -> DataFilter {
-        self.filter_in_range((Included(lower_limit), Unbounded))
+        self.filter_range((Included(lower_limit), Unbounded))
     }
 
     pub fn filter_lt(&self, upper_limit: T) -> DataFilter {
-        self.filter_in_range((Unbounded, Excluded(upper_limit)))
+        self.filter_range((Unbounded, Excluded(upper_limit)))
     }
 
     pub fn filter_lte(&self, upper_limit: T) -> DataFilter {
-        self.filter_in_range((Unbounded, Included(upper_limit)))
+        self.filter_range((Unbounded, Included(upper_limit)))
     }
 }
 
