@@ -8,6 +8,7 @@ description = "queriable_storage is a create that provides the QueriableDataStor
 repository = "https://github.com/Kaladum/queriable_storage"
 
 [dependencies]
+iter-set = "2.0.0"
 
 [dev-dependencies]
 chrono = "0.4"

@@ -20,6 +20,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "iter-set"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "becb7c6c38a705c68cfb1486e2c3765b6be8ed0b51efd6e407663c4c7312e10f"
+
+[[package]]
 name = "libc"
 version = "0.2.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -49,6 +55,7 @@ name = "queriable_storage"
 version = "0.2.1"
 dependencies = [
  "chrono",
+ "iter-set",
 ]
 
 [[package]]

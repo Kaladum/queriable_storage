@@ -27,6 +27,8 @@ use std::{
     ops::{BitAnd, BitOr, Bound::*, RangeBounds},
 };
 
+use iter_set::{intersection, union};
+
 ///Data structure that can be queried by multiple filters.
 ///Its not allowed to modify data after the generation of the data store.
 pub struct QueriableDataStore<T> {
@@ -150,29 +152,15 @@ impl DataFilter {
         indices.sort();
         Self { indices }
     }
-
-    fn indices<'a>(&'a self) -> impl Iterator<Item = usize> + 'a {
-        self.indices.iter().cloned()
-    }
 }
 
 impl BitAnd for DataFilter {
     type Output = DataFilter;
 
     fn bitand(self, other: DataFilter) -> Self::Output {
-        let mut indices: Vec<usize> = vec![];
-        let mut other_iterator = other.indices().peekable();
-
-        for index in self.indices() {
-            while other_iterator.peek().and_then(|v| Some(*v < index)) == Some(true) {
-                other_iterator.next();
-            }
-            if other_iterator.peek().cloned() == Some(index) {
-                indices.push(index);
-            }
+        Self {
+            indices: intersection(self.indices, other.indices).collect(),
         }
-
-        Self { indices }
     }
 }
 
@@ -180,31 +168,8 @@ impl BitOr for DataFilter {
     type Output = DataFilter;
 
     fn bitor(self, other: DataFilter) -> Self::Output {
-        let mut indices: Vec<usize> = vec![];
-        let mut other_iterator = other.indices().peekable();
-
-        for index in self.indices() {
-            loop {
-                if let Some(peek) = other_iterator.peek() {
-                    if *peek < index {
-                        indices.push(*peek);
-                        other_iterator.next();
-                    } else if *peek == index {
-                        other_iterator.next();
-                    } else {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            indices.push(index);
+        Self {
+            indices: union(self.indices, other.indices).collect(),
         }
-
-        for index in other_iterator {
-            indices.push(index);
-        }
-
-        Self { indices }
     }
 }
