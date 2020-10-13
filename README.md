@@ -1,6 +1,6 @@
 # queriable_storage
 [![Crates.io](https://img.shields.io/crates/v/queriable_storage.svg)](https://crates.io/crates/queriable_storage)
-[![Docs](https://docs.rs/queriable_storage/badge.svg?version=0.2.1)](https://docs.rs/queriable_storage)
+[![Docs](https://docs.rs/queriable_storage/badge.svg?version=0.3.0)](https://docs.rs/queriable_storage)
 
 __Queriable storage implementation in Rust__
 
