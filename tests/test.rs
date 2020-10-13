@@ -170,3 +170,35 @@ fn test_combined() {
         .collect();
     assert_eq!(filtered.len(), 2);
 }
+
+#[test]
+fn test_first_last() {
+    let data = get_test_data();
+    let age_index = data.get_index(|v| v.age);
+    {
+        //First
+        let filtered: Vec<&Person> = data.filter(age_index.first()).collect();
+        assert_eq!(filtered.len(), 1);
+        assert_eq!(filtered[0].age, 8);
+    }
+    {
+        //First_2
+        let filtered: Vec<&Person> = data.filter(age_index.first_n(2)).collect();
+        assert_eq!(filtered.len(), 2);
+        assert_eq!(filtered[0].age, 16);
+        assert_eq!(filtered[1].age, 8);
+    }
+    {
+        //Last
+        let filtered: Vec<&Person> = data.filter(age_index.last()).collect();
+        assert_eq!(filtered.len(), 1);
+        assert_eq!(filtered[0].age, 75);
+    }
+    {
+        //Last_2
+        let filtered: Vec<&Person> = data.filter(age_index.last_n(2)).collect();
+        assert_eq!(filtered.len(), 2);
+        assert_eq!(filtered[0].age, 75);
+        assert_eq!(filtered[1].age, 63);
+    }
+}

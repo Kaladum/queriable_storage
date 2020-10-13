@@ -133,6 +133,48 @@ where
     pub fn filter_lte(&self, upper_limit: T) -> DataFilter {
         self.filter_range((Unbounded, Included(upper_limit)))
     }
+
+    ///Get the first element in the index
+    pub fn first(&self) -> DataFilter {
+        DataFilter::from_unsorted(
+            self.pairs
+                .iter()
+                .flat_map(|v| v.1.iter())
+                .cloned()
+                .nth(0)
+                .into_iter(),
+        )
+    }
+
+    ///Get the first n elements of the index (less if the amount of items is smaller then n)
+    pub fn first_n(&self, n: usize) -> DataFilter {
+        DataFilter::from_unsorted(self.pairs.iter().flat_map(|v| v.1.iter()).cloned().take(n))
+    }
+
+    ///Get the last element in the index
+    pub fn last(&self) -> DataFilter {
+        DataFilter::from_unsorted(
+            self.pairs
+                .iter()
+                .rev()
+                .flat_map(|v| v.1.iter())
+                .cloned()
+                .nth(0)
+                .into_iter(),
+        )
+    }
+
+    ///Get the last n elements of the index (less if the amount of items is smaller then n)
+    pub fn last_n(&self, n: usize) -> DataFilter {
+        DataFilter::from_unsorted(
+            self.pairs
+                .iter()
+                .rev()
+                .flat_map(|v| v.1.iter())
+                .cloned()
+                .take(n),
+        )
+    }
 }
 
 ///Contains all items that match a given filter.
