@@ -8,7 +8,7 @@ This crate provides the QueriableDataStore struct that can be queried by multipl
 
 
 ## Example
-```
+```rust
 use queriable_storage::QueriableDataStore;
 struct Person {
     first_name: &'static str,

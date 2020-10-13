@@ -5,6 +5,7 @@ authors = ["Kaladum"]
 edition = "2018"
 license = "MIT"
 description = "queriable_storage is a create that provides the QueriableDataStore that can be queried by multiple filters."
+readme = "README.md"
 repository = "https://github.com/Kaladum/queriable_storage"
 
 [dependencies]
